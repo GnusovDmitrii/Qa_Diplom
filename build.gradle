@@ -1,0 +1,72 @@
+plugins {
+    id 'java'
+    id "io.freefair.lombok" version "6.5.0.3"
+    id 'io.qameta.allure' version '2.11.2'
+}
+
+group 'ru.netology'
+version '1.0-SNAPSHOT'
+
+sourceCompatibility = 17
+
+compileJava.options.encoding = "UTF-8"
+compileTestJava.options.encoding = "UTF-8"
+
+repositories {
+    mavenCentral()
+}
+
+def allureVersion = "2.21.0"
+
+dependencies {
+    // JUnit 5
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.9.2'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.9.2'
+
+    // Selenide (обновленный)
+    testImplementation 'com.codeborne:selenide:7.2.3'
+
+    // WebDriverManager (автоматическая установка драйверов)
+    testImplementation 'io.github.bonigarcia:webdrivermanager:5.6.2'
+
+    // Allure
+    testImplementation "io.qameta.allure:allure-selenide:$allureVersion"
+    testImplementation "io.qameta.allure:allure-junit5:$allureVersion"
+
+    // Faker для генерации данных
+    testImplementation 'com.github.javafaker:javafaker:1.0.2'
+
+    // Работа с БД
+    testImplementation 'mysql:mysql-connector-java:8.0.33'
+    testImplementation 'org.postgresql:postgresql:42.6.0'
+    testImplementation 'commons-dbutils:commons-dbutils:1.7'
+
+    // Lombok
+    compileOnly 'org.projectlombok:lombok:1.18.26'
+    annotationProcessor 'org.projectlombok:lombok:1.18.26'
+
+    // Logging
+    testImplementation 'org.slf4j:slf4j-simple:2.0.7'
+}
+
+allure {
+    version = allureVersion
+    adapter {
+        autoconfigure = true
+        frameworks {
+            junit5 {
+                adapterVersion = allureVersion
+            }
+        }
+    }
+}
+
+tasks.withType(Test) {
+    useJUnitPlatform()
+    systemProperty 'selenide.headless', System.getProperty('selenide.headless', 'false')
+    systemProperty 'db.url', System.getProperty('db.url', 'jdbc:mysql://localhost:3306/app')
+    systemProperty 'db.user', System.getProperty('db.user', 'app')
+    systemProperty 'db.password', System.getProperty('db.password', 'pass')
+
+
+}

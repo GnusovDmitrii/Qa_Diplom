@@ -1,0 +1,92 @@
+services:
+  # MySQL
+  mysql:
+    image: mysql:8.0
+    container_name: mysql-diplom
+    environment:
+      MYSQL_USER: app
+      MYSQL_PASSWORD: pass
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: app
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-proot"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    networks:
+      - diplom-network
+
+  # PostgreSQL
+  postgresql:
+    image: postgres:15
+    container_name: postgresql-diplom
+    environment:
+      POSTGRES_USER: app
+      POSTGRES_PASSWORD: pass
+      POSTGRES_DB: app
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U app -d app"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    networks:
+      - diplom-network
+
+  # Gate Simulator
+  gate-simulator:
+    image: node:18-alpine
+    container_name: gate-simulator-diplom
+    volumes:
+      - ./gate-simulator:/app
+    working_dir: /app
+    command: sh -c "npm install && npm start"
+    ports:
+      - "9999:9999"
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:9999/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    networks:
+      - diplom-network
+
+
+  sut:
+    image: eclipse-temurin:17-jre
+    container_name: sut-diplom
+    depends_on:
+      mysql:
+        condition: service_healthy
+      postgresql:
+        condition: service_healthy
+      gate-simulator:
+        condition: service_healthy
+    volumes:
+      - ./artifacts/aqa-shop.jar:/app/aqa-shop.jar
+      - ./artifacts/application.properties:/app/application.properties
+    working_dir: /app
+    command: java -jar aqa-shop.jar
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/app
+      - SPRING_DATASOURCE_USERNAME=app
+      - SPRING_DATASOURCE_PASSWORD=pass
+    networks:
+      - diplom-network
+
+networks:
+  diplom-network:
+    driver: bridge
+
+volumes:
+  mysql_data:
+  postgres_data:

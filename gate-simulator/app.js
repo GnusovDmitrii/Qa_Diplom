@@ -24,12 +24,10 @@ server.post(['/payment', '/credit'], (req, res) => {
   });
 });
 
-// Health check endpoint
 server.get('/health', (req, res) => {
   res.json({ status: 'ok' });
 });
 
-// get port from environment variable or just use 9999
 server.listen(process.env.PORT || 9999, () => {
   console.log(`Gate simulator running on port ${process.env.PORT || 9999}`);
 });

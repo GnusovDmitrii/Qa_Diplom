@@ -1,5 +1,4 @@
 services:
-  # MySQL
   mysql:
     image: mysql:8.0
     container_name: mysql-diplom
@@ -20,7 +19,6 @@ services:
     networks:
       - diplom-network
 
-  # PostgreSQL
   postgresql:
     image: postgres:15
     container_name: postgresql-diplom
@@ -40,14 +38,9 @@ services:
     networks:
       - diplom-network
 
-  # Gate Simulator
   gate-simulator:
-    image: node:18-alpine
+    build: ./gate-simulator
     container_name: gate-simulator-diplom
-    volumes:
-      - ./gate-simulator:/app
-    working_dir: /app
-    command: sh -c "npm install && npm start"
     ports:
       - "9999:9999"
     healthcheck:
@@ -57,7 +50,6 @@ services:
       retries: 10
     networks:
       - diplom-network
-
 
   sut:
     image: eclipse-temurin:17-jre
@@ -76,10 +68,6 @@ services:
     command: java -jar aqa-shop.jar
     ports:
       - "8080:8080"
-    environment:
-      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/app
-      - SPRING_DATASOURCE_USERNAME=app
-      - SPRING_DATASOURCE_PASSWORD=pass
     networks:
       - diplom-network
 

@@ -9,7 +9,7 @@ import java.util.Locale;
 import java.util.Random;
 
 public class DataGenerator {
-    private static final Faker faker = new Faker(new Locale("ru"));
+    private static final Faker faker = new Faker(new Locale("en"));
     private static final Random random = new Random();
 
     private DataGenerator() {
@@ -24,7 +24,7 @@ public class DataGenerator {
         String cvc;
     }
 
-    // Генерация валидной карты с нужным статусом
+    // === ВАЛИДНЫЕ ДАННЫЕ ===
     public static CardInfo generateValidCard(String status) {
         String cardNumber;
         if ("APPROVED".equals(status)) {
@@ -34,83 +34,103 @@ public class DataGenerator {
         }
 
         LocalDate now = LocalDate.now();
-        String month = String.format("%02d", now.plusMonths(1).getMonthValue());
-        String year = String.format("%02d", now.plusYears(1).getYear() % 100);
+        String month = String.format("%02d", now.getMonthValue());
+        String year = String.format("%02d", now.getYear() % 100);
         String owner = faker.name().firstName() + " " + faker.name().lastName();
         String cvc = String.format("%03d", random.nextInt(1000));
 
         return new CardInfo(cardNumber, month, year, owner, cvc);
     }
 
-    // Невалидный номер карты (короткий)
+    // === НЕГАТИВНЫЕ СЦЕНАРИИ: НОМЕР КАРТЫ ===
+    public static CardInfo generateEmptyCardNumber() {
+        return new CardInfo("", "12", "25", "Ivan Ivanov", "123");
+    }
+
+    public static CardInfo generateShortCardNumber() {
+        return new CardInfo("4444 4444 4444", "12", "25", "Ivan Ivanov", "123");
+    }
+
     public static CardInfo generateInvalidCardNumber() {
-        String cardNumber = "4444 4444 4444";
-        String month = "12";
-        String year = "25";
-        String owner = faker.name().firstName() + " " + faker.name().lastName();
-        String cvc = "123";
-
-        return new CardInfo(cardNumber, month, year, owner, cvc);
+        return new CardInfo("4444 4444 4444 4443", "12", "25", "Ivan Ivanov", "123");
     }
 
-    // Невалидный месяц
-    public static CardInfo generateInvalidMonth() {
-        String cardNumber = "4444 4444 4444 4441";
-        String month = "13";
-        String year = "25";
-        String owner = faker.name().firstName() + " " + faker.name().lastName();
-        String cvc = "123";
-
-        return new CardInfo(cardNumber, month, year, owner, cvc);
+    // === НЕГАТИВНЫЕ СЦЕНАРИИ: МЕСЯЦ ===
+    public static CardInfo generateEmptyMonth() {
+        return new CardInfo("4444 4444 4444 4441", "", "25", "Ivan Ivanov", "123");
     }
 
-    // Невалидный год
-    public static CardInfo generateInvalidYear() {
-        String cardNumber = "4444 4444 4444 4441";
-        String month = "12";
-        String year = "20"; // прошлый год
-        String owner = faker.name().firstName() + " " + faker.name().lastName();
-        String cvc = "123";
-
-        return new CardInfo(cardNumber, month, year, owner, cvc);
+    public static CardInfo generateOneDigitMonth() {
+        return new CardInfo("4444 4444 4444 4441", "1", "25", "Ivan Ivanov", "123");
     }
 
-    // Истекший срок
-    public static CardInfo generateExpiredCard() {
-        String cardNumber = "4444 4444 4444 4441";
-        LocalDate now = LocalDate.now();
-        String month = String.format("%02d", now.minusMonths(1).getMonthValue());
-        String year = String.format("%02d", now.minusYears(1).getYear() % 100);
-        String owner = faker.name().firstName() + " " + faker.name().lastName();
-        String cvc = "123";
-
-        return new CardInfo(cardNumber, month, year, owner, cvc);
+    public static CardInfo generateMonthGreaterThan12() {
+        return new CardInfo("4444 4444 4444 4441", "13", "25", "Ivan Ivanov", "123");
     }
 
-    // Невалидный CVV
-    public static CardInfo generateInvalidCvv() {
-        String cardNumber = "4444 4444 4444 4441";
-        String month = "12";
-        String year = "25";
-        String owner = faker.name().firstName() + " " + faker.name().lastName();
-        String cvc = "12";
-
-        return new CardInfo(cardNumber, month, year, owner, cvc);
+    public static CardInfo generateMonth00() {
+        return new CardInfo("4444 4444 4444 4441", "00", "25", "Ivan Ivanov", "123");
     }
 
-    // Невалидное имя владельца
-    public static CardInfo generateInvalidOwner() {
-        String cardNumber = "4444 4444 4444 4441";
-        String month = "12";
-        String year = "25";
-        String owner = "Test123!@#";
-        String cvc = "123";
-
-        return new CardInfo(cardNumber, month, year, owner, cvc);
+    // === НЕГАТИВНЫЕ СЦЕНАРИИ: ГОД ===
+    public static CardInfo generateEmptyYear() {
+        return new CardInfo("4444 4444 4444 4441", "12", "", "Ivan Ivanov", "123");
     }
 
-    // Пустая карта
-    public static CardInfo generateEmptyCard() {
+    public static CardInfo generateOneDigitYear() {
+        return new CardInfo("4444 4444 4444 4441", "12", "5", "Ivan Ivanov", "123");
+    }
+
+    public static CardInfo generateYearLessThanCurrent() {
+        int year = LocalDate.now().getYear() % 100 - 1;
+        return new CardInfo("4444 4444 4444 4441", "12", String.format("%02d", year), "Ivan Ivanov", "123");
+    }
+
+    public static CardInfo generateYearTooFarInFuture() {
+        int year = LocalDate.now().getYear() % 100 + 6;
+        return new CardInfo("4444 4444 4444 4441", "12", String.format("%02d", year), "Ivan Ivanov", "123");
+    }
+
+    public static CardInfo generateYear00() {
+        return new CardInfo("4444 4444 4444 4441", "12", "00", "Ivan Ivanov", "123");
+    }
+
+    // === НЕГАТИВНЫЕ СЦЕНАРИИ: ВЛАДЕЛЕЦ ===
+    public static CardInfo generateEmptyOwner() {
+        return new CardInfo("4444 4444 4444 4441", "12", "25", "", "123");
+    }
+
+    public static CardInfo generateOneWordOwner() {
+        return new CardInfo("4444 4444 4444 4441", "12", "25", "Ivan", "123");
+    }
+
+    public static CardInfo generateCyrillicOwner() {
+        return new CardInfo("4444 4444 4444 4441", "12", "25", "Иван Иванов", "123");
+    }
+
+    public static CardInfo generateOwnerWithDigits() {
+        return new CardInfo("4444 4444 4444 4441", "12", "25", "Ivan123", "123");
+    }
+
+    public static CardInfo generateOwnerWithSpecialChars() {
+        return new CardInfo("4444 4444 4444 4441", "12", "25", "Ivan@#$", "123");
+    }
+
+    // === НЕГАТИВНЫЕ СЦЕНАРИИ: CVC ===
+    public static CardInfo generateEmptyCvc() {
+        return new CardInfo("4444 4444 4444 4441", "12", "25", "Ivan Ivanov", "");
+    }
+
+    public static CardInfo generateOneDigitCvc() {
+        return new CardInfo("4444 4444 4444 4441", "12", "25", "Ivan Ivanov", "1");
+    }
+
+    public static CardInfo generateTwoDigitCvc() {
+        return new CardInfo("4444 4444 4444 4441", "12", "25", "Ivan Ivanov", "12");
+    }
+
+    // === ПУСТЫЕ ПОЛЯ (ИЗОЛИРОВАННЫЕ ПРОВЕРКИ) ===
+    public static CardInfo generateAllFieldsEmpty() {
         return new CardInfo("", "", "", "", "");
     }
 }

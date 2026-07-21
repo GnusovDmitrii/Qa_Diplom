@@ -51,26 +51,6 @@ services:
     networks:
       - diplom-network
 
-  sut:
-    image: eclipse-temurin:17-jre
-    container_name: sut-diplom
-    depends_on:
-      mysql:
-        condition: service_healthy
-      postgresql:
-        condition: service_healthy
-      gate-simulator:
-        condition: service_healthy
-    volumes:
-      - ./artifacts/aqa-shop.jar:/app/aqa-shop.jar
-      - ./artifacts/application.properties:/app/application.properties
-    working_dir: /app
-    command: java -jar aqa-shop.jar
-    ports:
-      - "8080:8080"
-    networks:
-      - diplom-network
-
 networks:
   diplom-network:
     driver: bridge

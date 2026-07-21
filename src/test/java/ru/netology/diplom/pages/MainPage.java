@@ -11,11 +11,9 @@ public class MainPage {
     private final SelenideElement creditButton = $$(".button").last();
     private final SelenideElement heading = $("h2");
 
-    @Step("Открыть главную страницу")
-    public MainPage openPage() {
+    public MainPage() {
         open("http://localhost:8080");
         heading.shouldBe(visible);
-        return this;
     }
 
     @Step("Выбрать оплату по карте")

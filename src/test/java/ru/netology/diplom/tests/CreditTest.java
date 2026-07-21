@@ -1,7 +1,5 @@
 package ru.netology.diplom.tests;
 
-import com.codeborne.selenide.SelenideElement;
-import io.github.bonigarcia.wdm.WebDriverManager;
 import io.qameta.allure.*;
 import org.junit.jupiter.api.*;
 import ru.netology.diplom.data.DataGenerator;
@@ -9,9 +7,6 @@ import ru.netology.diplom.db.DatabaseHelper;
 import ru.netology.diplom.pages.MainPage;
 import ru.netology.diplom.pages.PaymentPage;
 
-import static com.codeborne.selenide.Condition.visible;
-import static com.codeborne.selenide.Selenide.$;
-import static com.codeborne.selenide.Selenide.closeWebDriver;
 import static org.junit.jupiter.api.Assertions.*;
 
 @DisplayName("Credit Tests")
@@ -19,32 +14,17 @@ public class CreditTest {
     private MainPage mainPage;
     private PaymentPage paymentPage;
 
-    private SelenideElement cardNumberError = $(".input__sub", 0);
-    private SelenideElement monthError = $(".input__sub", 1);
-    private SelenideElement yearError = $(".input__sub", 2);
-    private SelenideElement ownerError = $(".input__sub", 3);
-    private SelenideElement cvcError = $(".input__sub", 4);
-
-    @BeforeAll
-    static void setUpAll() {
-        WebDriverManager.chromedriver().setup();
-        System.setProperty("selenide.browser", "chrome");
-        System.setProperty("selenide.headless", "false");
-        System.setProperty("selenide.timeout", "10000");
-    }
-
     @BeforeEach
     void setUp() {
         DatabaseHelper.cleanDatabase();
         mainPage = new MainPage();
-        mainPage.openPage();
         paymentPage = mainPage.chooseCredit();
     }
 
     @AfterEach
     void tearDown() {
         DatabaseHelper.cleanDatabase();
-        closeWebDriver();
+        // closeWebDriver(); // ← УДАЛЯЕМ - Selenide управляет драйвером сам
     }
 
     @Test
@@ -92,7 +72,7 @@ public class CreditTest {
     @Severity(SeverityLevel.NORMAL)
     @Feature("Validation")
     void shouldShowErrorForEmptyCardNumberCredit() {
-        var cardInfo = DataGenerator.generateEmptyCardNumber();
+        var cardInfo = DataGenerator.getEmptyCardNumber();
 
         paymentPage.fillCardData(cardInfo)
                 .submit()
@@ -104,7 +84,7 @@ public class CreditTest {
     @Severity(SeverityLevel.NORMAL)
     @Feature("Validation")
     void shouldShowErrorForShortCardNumberCredit() {
-        var cardInfo = DataGenerator.generateShortCardNumber();
+        var cardInfo = DataGenerator.getShortCardNumber();
 
         paymentPage.fillCardData(cardInfo)
                 .submit()
@@ -116,7 +96,7 @@ public class CreditTest {
     @Severity(SeverityLevel.NORMAL)
     @Feature("Validation")
     void shouldShowErrorForInvalidCardNumberCredit() {
-        var cardInfo = DataGenerator.generateInvalidCardNumber();
+        var cardInfo = DataGenerator.getInvalidCardNumber();
 
         paymentPage.fillCardData(cardInfo)
                 .submit()
@@ -128,7 +108,7 @@ public class CreditTest {
     @Severity(SeverityLevel.NORMAL)
     @Feature("Validation")
     void shouldShowErrorForEmptyMonthCredit() {
-        var cardInfo = DataGenerator.generateEmptyMonth();
+        var cardInfo = DataGenerator.getEmptyMonth();
 
         paymentPage.fillCardData(cardInfo)
                 .submit()
@@ -140,7 +120,7 @@ public class CreditTest {
     @Severity(SeverityLevel.NORMAL)
     @Feature("Validation")
     void shouldShowErrorForOneDigitMonthCredit() {
-        var cardInfo = DataGenerator.generateOneDigitMonth();
+        var cardInfo = DataGenerator.getOneDigitMonth();
 
         paymentPage.fillCardData(cardInfo)
                 .submit()
@@ -152,7 +132,7 @@ public class CreditTest {
     @Severity(SeverityLevel.NORMAL)
     @Feature("Validation")
     void shouldShowErrorForMonthGreaterThan12Credit() {
-        var cardInfo = DataGenerator.generateMonthGreaterThan12();
+        var cardInfo = DataGenerator.getMonthGreaterThan12();
 
         paymentPage.fillCardData(cardInfo)
                 .submit()
@@ -164,7 +144,7 @@ public class CreditTest {
     @Severity(SeverityLevel.NORMAL)
     @Feature("Validation")
     void shouldShowErrorForMonth00Credit() {
-        var cardInfo = DataGenerator.generateMonth00();
+        var cardInfo = DataGenerator.getMonth00();
 
         paymentPage.fillCardData(cardInfo)
                 .submit()
@@ -176,7 +156,7 @@ public class CreditTest {
     @Severity(SeverityLevel.NORMAL)
     @Feature("Validation")
     void shouldShowErrorForEmptyYearCredit() {
-        var cardInfo = DataGenerator.generateEmptyYear();
+        var cardInfo = DataGenerator.getEmptyYear();
 
         paymentPage.fillCardData(cardInfo)
                 .submit()
@@ -188,7 +168,7 @@ public class CreditTest {
     @Severity(SeverityLevel.NORMAL)
     @Feature("Validation")
     void shouldShowErrorForOneDigitYearCredit() {
-        var cardInfo = DataGenerator.generateOneDigitYear();
+        var cardInfo = DataGenerator.getOneDigitYear();
 
         paymentPage.fillCardData(cardInfo)
                 .submit()
@@ -200,7 +180,7 @@ public class CreditTest {
     @Severity(SeverityLevel.NORMAL)
     @Feature("Validation")
     void shouldShowErrorForYearLessThanCurrentCredit() {
-        var cardInfo = DataGenerator.generateYearLessThanCurrent();
+        var cardInfo = DataGenerator.getYearLessThanCurrent();
 
         paymentPage.fillCardData(cardInfo)
                 .submit()
@@ -212,7 +192,7 @@ public class CreditTest {
     @Severity(SeverityLevel.NORMAL)
     @Feature("Validation")
     void shouldShowErrorForYearTooFarInFutureCredit() {
-        var cardInfo = DataGenerator.generateYearTooFarInFuture();
+        var cardInfo = DataGenerator.getYearTooFarInFuture();
 
         paymentPage.fillCardData(cardInfo)
                 .submit()
@@ -224,7 +204,7 @@ public class CreditTest {
     @Severity(SeverityLevel.NORMAL)
     @Feature("Validation")
     void shouldShowErrorForYear00Credit() {
-        var cardInfo = DataGenerator.generateYear00();
+        var cardInfo = DataGenerator.getYear00();
 
         paymentPage.fillCardData(cardInfo)
                 .submit()
@@ -236,7 +216,7 @@ public class CreditTest {
     @Severity(SeverityLevel.NORMAL)
     @Feature("Validation")
     void shouldShowErrorForEmptyOwnerCredit() {
-        var cardInfo = DataGenerator.generateEmptyOwner();
+        var cardInfo = DataGenerator.getEmptyOwner();
 
         paymentPage.fillCardData(cardInfo)
                 .submit()
@@ -248,7 +228,7 @@ public class CreditTest {
     @Severity(SeverityLevel.NORMAL)
     @Feature("Validation")
     void shouldShowErrorForOneWordOwnerCredit() {
-        var cardInfo = DataGenerator.generateOneWordOwner();
+        var cardInfo = DataGenerator.getOneWordOwner();
 
         paymentPage.fillCardData(cardInfo)
                 .submit()
@@ -260,7 +240,7 @@ public class CreditTest {
     @Severity(SeverityLevel.NORMAL)
     @Feature("Validation")
     void shouldShowErrorForCyrillicOwnerCredit() {
-        var cardInfo = DataGenerator.generateCyrillicOwner();
+        var cardInfo = DataGenerator.getCyrillicOwner();
 
         paymentPage.fillCardData(cardInfo)
                 .submit()
@@ -272,7 +252,7 @@ public class CreditTest {
     @Severity(SeverityLevel.NORMAL)
     @Feature("Validation")
     void shouldShowErrorForOwnerWithDigitsCredit() {
-        var cardInfo = DataGenerator.generateOwnerWithDigits();
+        var cardInfo = DataGenerator.getOwnerWithDigits();
 
         paymentPage.fillCardData(cardInfo)
                 .submit()
@@ -284,7 +264,7 @@ public class CreditTest {
     @Severity(SeverityLevel.NORMAL)
     @Feature("Validation")
     void shouldShowErrorForOwnerWithSpecialCharsCredit() {
-        var cardInfo = DataGenerator.generateOwnerWithSpecialChars();
+        var cardInfo = DataGenerator.getOwnerWithSpecialChars();
 
         paymentPage.fillCardData(cardInfo)
                 .submit()
@@ -296,7 +276,7 @@ public class CreditTest {
     @Severity(SeverityLevel.NORMAL)
     @Feature("Validation")
     void shouldShowErrorForEmptyCvcCredit() {
-        var cardInfo = DataGenerator.generateEmptyCvc();
+        var cardInfo = DataGenerator.getEmptyCvc();
 
         paymentPage.fillCardData(cardInfo)
                 .submit()
@@ -308,7 +288,7 @@ public class CreditTest {
     @Severity(SeverityLevel.NORMAL)
     @Feature("Validation")
     void shouldShowErrorForOneDigitCvcCredit() {
-        var cardInfo = DataGenerator.generateOneDigitCvc();
+        var cardInfo = DataGenerator.getOneDigitCvc();
 
         paymentPage.fillCardData(cardInfo)
                 .submit()
@@ -320,7 +300,7 @@ public class CreditTest {
     @Severity(SeverityLevel.NORMAL)
     @Feature("Validation")
     void shouldShowErrorForTwoDigitCvcCredit() {
-        var cardInfo = DataGenerator.generateTwoDigitCvc();
+        var cardInfo = DataGenerator.getTwoDigitCvc();
 
         paymentPage.fillCardData(cardInfo)
                 .submit()
@@ -332,16 +312,11 @@ public class CreditTest {
     @Severity(SeverityLevel.NORMAL)
     @Feature("Validation")
     void shouldShowErrorOnlyForCardNumberEmptyCredit() {
-        var cardInfo = DataGenerator.generateEmptyCardNumber();
+        var cardInfo = DataGenerator.getEmptyCardNumber();
 
         paymentPage.fillCardData(cardInfo)
-                .submit();
-
-        cardNumberError.shouldBe(visible);
-        monthError.shouldNotBe(visible);
-        yearError.shouldNotBe(visible);
-        ownerError.shouldNotBe(visible);
-        cvcError.shouldNotBe(visible);
+                .submit()
+                .checkErrorOnlyForCardNumber();
     }
 
     @Test
@@ -349,15 +324,10 @@ public class CreditTest {
     @Severity(SeverityLevel.NORMAL)
     @Feature("Validation")
     void shouldShowErrorsForAllFieldsEmptyCredit() {
-        var cardInfo = DataGenerator.generateAllFieldsEmpty();
+        var cardInfo = DataGenerator.getAllFieldsEmpty();
 
         paymentPage.fillCardData(cardInfo)
-                .submit();
-
-        paymentPage.checkCardNumberError("Field is required")
-                .checkMonthError("Field is required")
-                .checkYearError("Field is required")
-                .checkOwnerError("Field is required")
-                .checkCvcError("Field is required");
+                .submit()
+                .checkErrorsForAllFields();
     }
 }

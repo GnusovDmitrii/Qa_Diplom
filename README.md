@@ -58,6 +58,28 @@ ___
 ``docker-compose logs sut --tail=30``
 ___
 
+## Запуск SUT
+
+### Запуск с MySQL
+
+`java -jar artifacts/aqa-shop.jar `
+<br>`"-Dspring.datasource.url=jdbc:mysql://localhost:3306/app"`
+
+### Запуск с PostgreSQL
+
+`java -jar artifacts/aqa-shop.jar `
+<br>`"-Dspring.datasource.url=jdbc:postgresql://localhost:5432/app"`
+
+### Полный запуск
+`java -jar artifacts/aqa-shop.jar `
+<br>`"-Dspring.credit-gate.url=http://localhost:9999/credit" `
+<br>`"-Dspring.payment-gate.url=http://localhost:9999/payment" `
+<br>`"-Dspring.datasource.url=jdbc:mysql://localhost:3306/app" `
+<br>`"-Dspring.datasource.username=app" `
+<br>`"-Dspring.datasource.password=pass"`
+
+___
+
 ## Запуск тестов
 
 - Запустить все тесты
@@ -71,6 +93,14 @@ ___
 - Запустить только тесты кредита
   <br>``./gradlew test --tests CreditTest``
 
+
+- Запуск с конкретной БД
+    - MySQL
+      <br> `` ./gradlew test -Ddb.url=jdbc:mysql://localhost:3306/app ``
+
+    - PostgreSQL
+      <br> `` ./gradlew test -Ddb.url=jdbc:postgresql://localhost:5432/app ``
+
 ## Генерация отчетов
 
 - Сгенерировать Allure отчет
@@ -78,24 +108,25 @@ ___
 
 
 - Открыть Allure отчет в браузере
-<br>``./gradlew allureServe``
+  <br>``./gradlew allureServe``
 
 
 - Открыть HTML отчет Gradle
-<br>``start build/reports/tests/test/index.html``
+  <br>``start build/reports/tests/test/index.html``
 
 ## Остановка инфраструктуры
 
 - Остановить все контейнеры
-<br>``docker-compose down``
+  <br>``docker-compose down``
 
 
 - Остановить и удалить все данные (включая БД)
-<br>``docker-compose down -v``
+  <br>``docker-compose down -v``
 
-##  Отчеты
+## Отчеты
+
 ### После запуска тестов доступны следующие отчеты:
 
-<br>**Allure**	`build/reports/allure-report/`	--- _Наглядный отчет с диаграммами, шагами и скриншотами_.
-<br> **Gradle**	`build/reports/tests/test/index.html` --- _Стандартный отчет Gradle_.
-<br> **Документация**	`Report.md, Summary.md`	--- _Отчеты о тестировании и автоматизации_.
+<br>**Allure**    `build/reports/allure-report/`    --- _Наглядный отчет с диаграммами, шагами и скриншотами_.
+<br> **Gradle**    `build/reports/tests/test/index.html` --- _Стандартный отчет Gradle_.
+<br> **Документация**    `Report.md, Summary.md`    --- _Отчеты о тестировании и автоматизации_.

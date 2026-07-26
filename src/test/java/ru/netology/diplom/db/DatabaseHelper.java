@@ -9,6 +9,7 @@ import java.sql.SQLException;
 import java.util.Optional;
 
 public class DatabaseHelper {
+    // URL берется из системного свойства, переданного через -Ddb.url
     private static final String DB_URL = System.getProperty("db.url", "jdbc:mysql://localhost:3306/app");
     private static final String DB_USER = System.getProperty("db.user", "app");
     private static final String DB_PASSWORD = System.getProperty("db.password", "pass");
